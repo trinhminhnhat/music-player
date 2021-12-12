@@ -31,19 +31,18 @@ body {
   width: 100%;
   max-width: 500px;
   background-color: #fff;
+  z-index: 1;
 }
 
-.music-player .music-thumb {
-  width: 100px;
-  height: 100px;
+.music-player .cd {
+  width: 200px;
   margin: 0 auto 25px;
 }
 
-.music-player .music-thumb img {
+.music-player .cd .cd-thumb {
   width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  padding-top: 100%;
+  background-size: cover;
   border-radius: 50%;
 }
 
@@ -133,7 +132,7 @@ body {
 }
 
 .music-player .play-list {
-  margin-top: 400px;
+  margin-top: 475px;
   background-color: #fff;
   padding: 15px;
 }
