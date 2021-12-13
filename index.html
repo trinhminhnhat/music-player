@@ -13,11 +13,10 @@
         <div class="dashboard">
             <div class="cd">
                 <div class="cd-thumb" style="background-image: url('./assets/img/Hotel California - Eagles.png')"></div>
-                <!-- <img src="./assets/img/Hotel California - Eagles.png" alt=""> -->
             </div>
             <h3 class="music-name">Hotel California</h3>
             <h4 class="music-artist">Eagles</h4>
-            <input type="range" name="range" id="range" class="music-range">
+            <input type="range" name="progress" class="progress-bar" min="0" max="100" step="1" value="0">
             <audio id="audio" src=""></audio>
             <div class="timer">
                 <div class="duration">
@@ -32,7 +31,6 @@
                 <ion-icon name="play-skip-back-outline" class="icon play-skip-back"></ion-icon>
                 <div class="play">
                     <ion-icon name="play-outline"></ion-icon>
-                    <!-- <ion-icon name="pause-outline" class="icon"></ion-icon> -->
                 </div>
                 <ion-icon name="play-skip-forward-outline" class="icon play-skip-forward"></ion-icon>
                 <ion-icon name="shuffle-outline" class="icon"></ion-icon>

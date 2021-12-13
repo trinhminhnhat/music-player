@@ -1,6 +1,14 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const musicName = $('.music-player .music-name');
+const musicArtist = $('.music-player .music-artist');
+const cd = $('.cd');
+const cdThumb = $('.music-player .cd-thumb');
+const audio = $('.music-player #audio');
+const playButton = $('.music-player .play');
+const progressBar = $('.music-player .progress-bar');
+
 const app = {
     currentIndex: 0,
     songs: [
@@ -58,9 +66,9 @@ const app = {
         });
     },
     handleEvents() {
-        const cd = $('.cd');
         const cdWidth = cd.offsetWidth;
 
+        // handle zoom in/out CD when scroll
         document.onscroll = () => {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
             const newCdWidth = cdWidth - scrollTop;
@@ -68,13 +76,34 @@ const app = {
             cd.style.width = newCdWidth > 0 ? `${newCdWidth}px` : 0;
             cd.style.opacity = newCdWidth / cdWidth;
         }
+
+        // handle play/pause music
+        playButton.onclick = () => {
+            console.log('audio.paused: ', audio.paused);
+            if (audio.paused) {
+                audio.play();
+                playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
+            } else {
+                audio.pause();
+                playButton.innerHTML = '<ion-icon name="play-outline"></ion-icon>';
+            }
+        }
+
+        // handle progress bar
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.value = percent;
+            }
+        }
+
+        // handle onchange progress bar
+        progressBar.onchange = (e) => {
+            const percent = e.target.value;
+            audio.currentTime = (audio.duration / 100) * percent;
+        }
     },
     loadCurrentSong() {
-        const musicName = $('.music-player .music-name');
-        const musicArtist = $('.music-player .music-artist');
-        const cdThumb = $('.music-player .cd-thumb');
-        const audio = $('.music-player #audio');
-
         musicName.textContent = this.currentSong.name;
         musicArtist.textContent = this.currentSong.artist;
         cdThumb.style.backgroundImage = this.currentSong.img;

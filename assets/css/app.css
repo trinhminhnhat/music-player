@@ -60,7 +60,7 @@ body {
   margin-bottom: 10px;
 }
 
-.music-player .music-range {
+.music-player .progress-bar {
   position: relative;
   -webkit-appearance: none;
   width: 100%;
@@ -70,7 +70,7 @@ body {
   outline: none;
 }
 
-.music-player .music-range::before {
+.music-player .progress-bar::before {
   position: absolute;
   content: "";
   top: 8px;
