@@ -8,9 +8,13 @@ const cdThumb = $('.music-player .cd-thumb');
 const audio = $('.music-player #audio');
 const playButton = $('.music-player .play');
 const progressBar = $('.music-player .progress-bar');
+const nextButton = $('.music-player .play-skip-forward');
+const prevButton = $('.music-player .play-skip-back');
+const shuffleButton = $('.music-player .play-shuffle');
 
 const app = {
     currentIndex: 0,
+    isShuffle: false,
     songs: [
         {
             name: 'Hotel California',
@@ -68,6 +72,15 @@ const app = {
     handleEvents() {
         const cdWidth = cd.offsetWidth;
 
+        // handle cdThumb rotate
+        const cdThumbAnimation = cdThumb.animate([
+            { transform: 'rotate(360deg)' },
+        ], {
+            duration: 10000,
+            iterations: Infinity
+        });
+        cdThumbAnimation.pause();
+
         // handle zoom in/out CD when scroll
         document.onscroll = () => {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -79,12 +92,13 @@ const app = {
 
         // handle play/pause music
         playButton.onclick = () => {
-            console.log('audio.paused: ', audio.paused);
             if (audio.paused) {
                 audio.play();
+                cdThumbAnimation.play();
                 playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
             } else {
                 audio.pause();
+                cdThumbAnimation.pause();
                 playButton.innerHTML = '<ion-icon name="play-outline"></ion-icon>';
             }
         }
@@ -102,12 +116,77 @@ const app = {
             const percent = e.target.value;
             audio.currentTime = (audio.duration / 100) * percent;
         }
+
+        // handle next song
+        nextButton.onclick = () => {
+            if (this.isShuffle) {
+                this.shuffleSong();
+            } else {
+                this.nextSong();
+            }
+
+            audio.play();
+            cdThumbAnimation.play();
+            playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
+        }
+
+        // handle prev song
+        prevButton.onclick = () => {
+            if (this.isShuffle) {
+                this.shuffleSong();
+            } else {
+                this.prevSong();
+            }
+
+            audio.play();
+            cdThumbAnimation.play();
+            playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
+        }
+
+        // handle click shuffle
+        shuffleButton.onclick = () => {
+            this.isShuffle = !this.isShuffle;
+            shuffleButton.classList.toggle('active');
+        }
+
+        // handle when audio ended
+        audio.onended = () => {
+            nextButton.click();
+        }
     },
     loadCurrentSong() {
         musicName.textContent = this.currentSong.name;
         musicArtist.textContent = this.currentSong.artist;
-        cdThumb.style.backgroundImage = this.currentSong.img;
+        cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
         audio.src = this.currentSong.src;
+    },
+    nextSong() {
+        this.currentIndex++;
+
+        if (this.currentIndex >= this.songs.length) {
+            this.currentIndex = 0;
+        }
+        
+        this.loadCurrentSong();
+    },
+    prevSong() {
+        this.currentIndex--;
+
+        if (this.currentIndex < 0) {
+            this.currentIndex = this.songs.length - 1;
+        }
+
+        this.loadCurrentSong();
+    },
+    shuffleSong() {
+        let randomIndex;
+
+        do {
+            randomIndex = Math.floor(Math.random() * this.songs.length);
+        } while (this.currentIndex === randomIndex);
+
+        this.currentIndex = randomIndex;
+        this.loadCurrentSong();
     },
     start() {
         this.defineProperties();

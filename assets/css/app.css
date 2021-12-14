@@ -131,6 +131,10 @@ body {
   font-size: 1.6rem;
 }
 
+.music-player .controls .icon.active {
+  color: #369af8;
+}
+
 .music-player .play-list {
   margin-top: 475px;
   background-color: #fff;
