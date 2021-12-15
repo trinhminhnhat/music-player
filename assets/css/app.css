@@ -142,6 +142,7 @@ body {
 }
 
 .music-player .play-list .song {
+  cursor: pointer;
   display: -ms-grid;
   display: grid;
   -webkit-box-align: center;
@@ -157,6 +158,18 @@ body {
 
 .music-player .play-list .song + .song {
   margin-top: 20px;
+}
+
+.music-player .play-list .song.active {
+  background-color: #369af8;
+}
+
+.music-player .play-list .song.active .title, .music-player .play-list .song.active .author {
+  color: #fff;
+}
+
+.music-player .play-list .song:active {
+  opacity: 0.8;
 }
 
 .music-player .play-list .thumb {

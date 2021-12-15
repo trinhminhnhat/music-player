@@ -124,6 +124,7 @@ body {
         padding: 15px;
 
         .song {
+            cursor: pointer;
             display: grid;
             align-items: center;
             grid-template-columns: 45px 1fr 20px;
@@ -133,6 +134,18 @@ body {
 
             & + .song {
                 margin-top: 20px;
+            }
+
+            &.active {
+                background-color: #369af8;
+
+                .title, .author {
+                    color: #fff;
+                }
+            }
+
+            &:active {
+                opacity: 0.8;
             }
         }
 

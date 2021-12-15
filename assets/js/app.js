@@ -10,11 +10,14 @@ const playButton = $('.music-player .play');
 const progressBar = $('.music-player .progress-bar');
 const nextButton = $('.music-player .play-skip-forward');
 const prevButton = $('.music-player .play-skip-back');
-const shuffleButton = $('.music-player .play-shuffle');
+const shuffleButton = $('.music-player .btn-shuffle');
+const repeatButton = $('.music-player .btn-repeat');
+const playList = $('.music-player .play-list');
 
 const app = {
     currentIndex: 0,
     isShuffle: false,
+    isRepeat: false,
     songs: [
         {
             name: 'Hotel California',
@@ -42,9 +45,9 @@ const app = {
         },
     ],
     render() {
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song, index) => {
             return `
-                <div class="song">
+                <div class="song ${index == this.currentIndex ? 'active' : ''}" data-index="${index}">
                     <div class="thumb">
                         <img src="${song.img}" alt="">
                     </div>
@@ -60,7 +63,7 @@ const app = {
 
         });
 
-        $('.play-list').innerHTML = htmls.join('');
+        playList.innerHTML = htmls.join('');
     },
     defineProperties() {
         Object.defineProperty(this, 'currentSong', {
@@ -111,8 +114,8 @@ const app = {
             }
         }
 
-        // handle onchange progress bar
-        progressBar.onchange = (e) => {
+        // handle oninput progress bar
+        progressBar.oninput = (e) => {
             const percent = e.target.value;
             audio.currentTime = (audio.duration / 100) * percent;
         }
@@ -149,9 +152,29 @@ const app = {
             shuffleButton.classList.toggle('active');
         }
 
+        // handle click repeat
+        repeatButton.onclick = () => {
+            this.isRepeat = !this.isRepeat;
+            repeatButton.classList.toggle('active');
+        }
+
+
         // handle when audio ended
         audio.onended = () => {
-            nextButton.click();
+            if (this.isRepeat) {
+                audio.play();
+            } else {
+                nextButton.click();
+            }
+        }
+
+        // handle click play list
+        playList.onclick = (e) => {
+            if (e.target.closest('.song:not(.active)')
+                || e.target.closest('.option')
+            ) {
+              
+            }
         }
     },
     loadCurrentSong() {
