@@ -1,6 +1,7 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const PLAYER_STORAGE_KEY = 'MY_PLAYER';
 const musicName = $('.music-player .music-name');
 const musicArtist = $('.music-player .music-artist');
 const cd = $('.cd');
@@ -18,6 +19,7 @@ const app = {
     currentIndex: 0,
     isShuffle: false,
     isRepeat: false,
+    config: JSON.parse(localStorage.getItem(PLAYER_KEY)) || {},
     songs: [
         {
             name: 'Hotel California',
@@ -44,6 +46,10 @@ const app = {
             src: './assets/music/The River - Axel Johansson.mp3',
         },
     ],
+    setConfig(key, value) {
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_KEY, JSON.stringify(this.config));
+    },
     render() {
         const htmls = this.songs.map((song, index) => {
             return `
@@ -97,13 +103,21 @@ const app = {
         playButton.onclick = () => {
             if (audio.paused) {
                 audio.play();
-                cdThumbAnimation.play();
-                playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
             } else {
                 audio.pause();
-                cdThumbAnimation.pause();
-                playButton.innerHTML = '<ion-icon name="play-outline"></ion-icon>';
             }
+        }
+
+        // effect when play music
+        audio.onplay = () => {
+            cdThumbAnimation.play();
+            playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';          
+        }
+
+         // effect when pause music
+        audio.onpause = () => {
+            cdThumbAnimation.pause();
+            playButton.innerHTML = '<ion-icon name="play-outline"></ion-icon>';
         }
 
         // handle progress bar
@@ -129,8 +143,6 @@ const app = {
             }
 
             audio.play();
-            cdThumbAnimation.play();
-            playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
         }
 
         // handle prev song
@@ -142,26 +154,28 @@ const app = {
             }
 
             audio.play();
-            cdThumbAnimation.play();
-            playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';
         }
 
         // handle click shuffle
         shuffleButton.onclick = () => {
             this.isShuffle = !this.isShuffle;
-            shuffleButton.classList.toggle('active');
+            this.setConfig('isShuffle', this.isShuffle);
+            shuffleButton.classList.toggle('active', this.isShuffle);
         }
 
         // handle click repeat
         repeatButton.onclick = () => {
             this.isRepeat = !this.isRepeat;
-            repeatButton.classList.toggle('active');
+            this.setConfig('isRepeat', this.isRepeat);
+            repeatButton.classList.toggle('active', this.isRepeat);
         }
-
 
         // handle when audio ended
         audio.onended = () => {
-            if (this.isRepeat) {
+            if (this.isShuffle) {
+                this.shuffleSong();
+                audio.play();
+            } else if (this.isRepeat) {
                 audio.play();
             } else {
                 nextButton.click();
@@ -170,10 +184,15 @@ const app = {
 
         // handle click play list
         playList.onclick = (e) => {
-            if (e.target.closest('.song:not(.active)')
-                || e.target.closest('.option')
-            ) {
-              
+            if (e.target.closest('.song:not(.active)') || e.target.closest('.option')) {
+                if (e.target.closest('.option')) {
+
+                } else {
+                    this.currentIndex = e.target.closest('.song').dataset.index;
+                    this.loadCurrentSong();
+                    this.render();
+                    audio.play();
+                }
             }
         }
     },
@@ -182,6 +201,13 @@ const app = {
         musicArtist.textContent = this.currentSong.artist;
         cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
         audio.src = this.currentSong.src;
+    },
+    loadConfig() {
+        this.isShuffle = this.config.isShuffle;
+        this.isRepeat = this.config.isRepeat;
+
+        shuffleButton.classList.toggle('active', this.isShuffle);
+        repeatButton.classList.toggle('active', this.isRepeat);
     },
     nextSong() {
         this.currentIndex++;
@@ -212,6 +238,7 @@ const app = {
         this.loadCurrentSong();
     },
     start() {
+        this.loadConfig();
         this.defineProperties();
         this.handleEvents();
         this.loadCurrentSong();
