@@ -19,6 +19,7 @@ const app = {
     currentIndex: 0,
     isShuffle: false,
     isRepeat: false,
+    playedRandomIndex: [],
     config: JSON.parse(localStorage.getItem(PLAYER_KEY)) || {},
     songs: [
         {
@@ -107,13 +108,13 @@ const app = {
             }
         }
 
-        // effect when play music
+        // effect when audio play
         audio.onplay = () => {
             cdThumbAnimation.play();
             playButton.innerHTML = '<ion-icon name="pause-outline"></ion-icon>';          
         }
 
-         // effect when pause music
+        // effect when audio pause
         audio.onpause = () => {
             cdThumbAnimation.pause();
             playButton.innerHTML = '<ion-icon name="play-outline"></ion-icon>';
@@ -142,6 +143,7 @@ const app = {
             }
 
             audio.play();
+            this.scrollToActiveSong();
         }
 
         // handle prev song
@@ -153,6 +155,7 @@ const app = {
             }
 
             audio.play();
+            this.scrollToActiveSong();
         }
 
         // handle click shuffle
@@ -228,13 +231,28 @@ const app = {
         this.loadCurrentSong();
     },
     shuffleSong() {
-        let randomIndex;
-
+        let newIndex;
+        
+        const randomNumber = () => {
+            return Math.floor(Math.random() * this.songs.length);
+        }
+        
         do {
-            randomIndex = Math.floor(Math.random() * this.songs.length);
-        } while (this.currentIndex === randomIndex);
-
-        this.currentIndex = randomIndex;
+            newIndex = randomNumber();
+        } while (this.playedRandomIndex.includes(newIndex) && this.playedRandomIndex.length < this.songs.length);
+        
+        if (this.playedRandomIndex.length < this.songs.length) {
+            this.playedRandomIndex.push(newIndex);
+        } else {
+            // reset index
+            while (this.currentIndex == newIndex) {
+                newIndex = randomNumber();
+            }
+        
+            this.playedRandomIndex = [this.currentIndex, newIndex];
+        }
+        
+        this.currentIndex = newIndex;
         this.loadCurrentSong();
     },
     activeSong() {
@@ -247,6 +265,23 @@ const app = {
         if (songs[this.currentIndex]) {
             songs[this.currentIndex].classList.add('active');
         }
+    },
+    scrollToActiveSong() {
+        setTimeout(() => {
+            const scrollSong = $('.play-list .song.active');
+
+            if (this.currentIndex < 2) {
+                scrollSong.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+            })
+            } else {
+                scrollSong.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                })
+            }
+        }, 300)
     },
     start() {
         this.loadConfig();
