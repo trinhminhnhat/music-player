@@ -1,7 +1,7 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const PLAYER_STORAGE_KEY = 'MY_PLAYER';
+const PLAYER_KEY = 'MY_PLAYER';
 const musicName = $('.music-player .music-name');
 const musicArtist = $('.music-player .music-artist');
 const cd = $('.cd');
@@ -66,7 +66,6 @@ const app = {
                     </div>
                 </div>
             `;
-
         });
 
         playList.innerHTML = htmls.join('');
@@ -190,7 +189,6 @@ const app = {
                 } else {
                     this.currentIndex = e.target.closest('.song').dataset.index;
                     this.loadCurrentSong();
-                    this.render();
                     audio.play();
                 }
             }
@@ -201,10 +199,12 @@ const app = {
         musicArtist.textContent = this.currentSong.artist;
         cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
         audio.src = this.currentSong.src;
+
+        this.activeSong();
     },
     loadConfig() {
-        this.isShuffle = this.config.isShuffle;
-        this.isRepeat = this.config.isRepeat;
+        this.isShuffle = this.config.isShuffle ?? false;
+        this.isRepeat = this.config.isRepeat ?? false;
 
         shuffleButton.classList.toggle('active', this.isShuffle);
         repeatButton.classList.toggle('active', this.isRepeat);
@@ -236,6 +236,17 @@ const app = {
 
         this.currentIndex = randomIndex;
         this.loadCurrentSong();
+    },
+    activeSong() {
+        const songs = $$('.play-list .song');
+        
+        songs.forEach((song, index) => {
+            song.classList.remove('active');
+        });
+
+        if (songs[this.currentIndex]) {
+            songs[this.currentIndex].classList.add('active');
+        }
     },
     start() {
         this.loadConfig();
