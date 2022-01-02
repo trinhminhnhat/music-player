@@ -141,8 +141,8 @@ const app = {
 				const percent = (audio.currentTime / audio.duration) * 100;
 				progressBar.value = percent;
 
-                durationSongTime.textContent = this.formatTime(audio.currentTime);
-                songTime.textContent = this.formatTime(audio.duration);
+				durationSongTime.textContent = this.formatTime(audio.currentTime);
+				songTime.textContent = this.formatTime(audio.duration);
 			}
 		};
 
@@ -223,12 +223,11 @@ const app = {
 		cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
 		audio.src = this.currentSong.src;
 
-		if (audio.duration) {
-            durationSongTime.textContent = "00:00";
-            songTime.textContent = "00:00";
-		} else {
-            console.log('audio: ', audio.duration);
-        }
+		// init duration and song time
+		audio.onloadedmetadata = () => {
+			durationSongTime.textContent = this.formatTime(audio.currentTime);
+			songTime.textContent = this.formatTime(audio.duration);
+		};
 
 		this.activeSong();
 	},
