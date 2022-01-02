@@ -14,6 +14,8 @@ const prevButton = $(".music-player .play-skip-back");
 const shuffleButton = $(".music-player .btn-shuffle");
 const repeatButton = $(".music-player .btn-repeat");
 const playList = $(".music-player .play-list");
+const durationSongTime = $(".music-player .timer .duration");
+const songTime = $(".music-player .timer .song-time");
 
 const app = {
 	currentIndex: 0,
@@ -73,6 +75,15 @@ const app = {
 
 		playList.innerHTML = htmls.join("");
 	},
+	formatTime(number) {
+		const hours = Math.floor(number / 3600);
+		const minutes = Math.floor(number / 60);
+		const seconds = Math.floor(number % 60);
+
+		return `${hours > 0 ? `${hours}:` : ""}${
+			minutes < 10 ? `0${minutes}` : minutes
+		}:${seconds < 10 ? `0${seconds}` : seconds}`;
+	},
 	defineProperties() {
 		Object.defineProperty(this, "currentSong", {
 			get() {
@@ -129,6 +140,9 @@ const app = {
 			if (audio.duration) {
 				const percent = (audio.currentTime / audio.duration) * 100;
 				progressBar.value = percent;
+
+                durationSongTime.textContent = this.formatTime(audio.currentTime);
+                songTime.textContent = this.formatTime(audio.duration);
 			}
 		};
 
@@ -208,6 +222,13 @@ const app = {
 		musicArtist.textContent = this.currentSong.artist;
 		cdThumb.style.backgroundImage = `url('${this.currentSong.img}')`;
 		audio.src = this.currentSong.src;
+
+		if (audio.duration) {
+            durationSongTime.textContent = "00:00";
+            songTime.textContent = "00:00";
+		} else {
+            console.log('audio: ', audio.duration);
+        }
 
 		this.activeSong();
 	},
