@@ -7,4 +7,7 @@ Build the music player app using Javascript
 [**https://trinhminhnhat.github.io/music-player/**](https://trinhminhnhat.github.io/music-player/)
 
 ## Author
-[**Trinh Minh Nhat**](https://github.com/trinhminhnhat)
+[**Trịnh Minh Nhật**](https://github.com/trinhminhnhat)
+
+## References
+[**https://fullstack.edu.vn/**](https://fullstack.edu.vn/)
